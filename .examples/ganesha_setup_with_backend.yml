@@ -1,0 +1,30 @@
+- name: Setup NFS Ganesha
+  hosts: servers
+  remote_user: root
+  gather_facts: false
+
+  vars:
+    gluster_features_ganesha_masternode: "{{ groups['servers'][0] }}"
+    gluster_features_ganesha_clusternodes: "{{ groups['servers'] }}"
+
+    # This has to be hostnames
+    gluster_features_ganesha_haname: ganesha-ha-13-apr
+    gluster_features_ganesha_volume: 'ganeshavol'
+    gluster_features_ganesha_hostnames: "server1,server2,server3"
+    gluster_features_ganesha_viplist: 10.70.44.121,10.70.44.122
+
+    # Variables for backendsetup
+    gluster_infra_stripe_unit_size: 128
+    gluster_infra_pvs: /dev/vdb,/dev/vdc
+    # Create a thin volume
+    gluster_infra_lv_logicalvols:
+       - { lvname: 'glusterstore_thinlv', lvsize: '500G' }
+    gluster_infra_mount_devices:
+       - { path: '/storage/ganesha',   lv: glusterstore_thinlv }
+
+    # GlusterFS volume
+    gluster_cluster_volumes:
+       - { volname: 'ganeshavol', brick: '/storage/ganesha/ganeshavol' }
+  roles:
+     - gluster.infra
+     - gluster.features
