@@ -23,8 +23,13 @@
        - { path: '/storage/ganesha',   lv: glusterstore_thinlv }
 
     # GlusterFS volume
-    gluster_cluster_volumes:
-       - { volname: 'ganeshavol', brick: '/storage/ganesha/ganeshavol' }
+    gluster_cluster_volume: 'ganeshavol'
+    gluster_cluster_replica_count: 3
+    gluster_cluster_arbiter_count: 1
+    gluster_cluster_bricks: '/storage/ganesha/ganeshavol'
+    gluster_cluster_hosts: "{{ groups['servers'] }}"
+    gluster_cluster_force: 'yes'
   roles:
      - gluster.infra
+     - gluster.cluster
      - gluster.features
